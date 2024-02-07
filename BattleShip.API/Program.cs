@@ -1,6 +1,7 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Diagnostics;
+using BattleShip.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,16 +37,14 @@ app.MapGet("/GetGames", () => {
 app.MapGet("/StartGame", () =>
 {
     var gameService = app.Services.GetRequiredService<GameService>();
+    var actionService = app.Services.GetRequiredService<ActionService>();
     gameService.currentPartie = gameService.InitGame();
     gameService.parties.Add(gameService.currentPartie);
     BoardService.PlaceShips(gameService.currentPartie.Player1Board, BoardService.GetAllShips());
     BoardService.PlaceShips(gameService.currentPartie.Player2Board, BoardService.GetAllShips());
     var positionsPlayer1 = BoardService.ListShipPositions(gameService.currentPartie.Player1Board);
-    var boards = new
-    {
-        PartieId = gameService.currentPartie.Id,
-        Player1Board = positionsPlayer1
-    };
+    actionService.moves = ActionService.GenerateAllMoves();
+    var boards = new CreateGameDTO(gameService.currentPartie.Id, positionsPlayer1);
     return boards;
 }).WithName("StartGame")
   .WithDescription("Start a new game of battleship")
@@ -81,13 +80,28 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
     {
         return Results.NotFound("Game not found");
     }
+    if (game.isFinished)
+    {
+        return Results.BadRequest("Game is finished");
+    }
     var playerBoard = game.Player2Board;
     if (playerBoard[y, x] == 'O' || playerBoard[y, x] == 'X')
     {
         return Results.BadRequest("Position already attacked");
     }
     var attack = actionService.Attack(game.Player1, playerBoard, x, y);
-    return Results.Ok(attack);
+    var result = new { Attack = attack };
+    if (attack.AttackState != "Hit")
+    {
+        var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
+        if (aiAttack.winner != "")
+        {
+            attack.winner = aiAttack.winner;
+            attack.GameStatus = "Game Over";
+        }
+        result = new { Attack = attack};
+    }
+    return Results.Ok(result);
 })
 .WithName("GetAttack")
 .WithDescription("Get the attack from player 1")

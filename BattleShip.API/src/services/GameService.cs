@@ -4,6 +4,7 @@ public class GameService
 {
     public class Partie
     {
+        public bool isFinished { get; set; }
         public Guid Id { get; set; }
         public string Player1 { get; set; }
         public string Player2 { get; set; }
