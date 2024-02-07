@@ -2,14 +2,19 @@ using System.Reflection.Metadata.Ecma335;
 
 public class ActionService
 {
+    public List<Tuple<int, int>> moves { get; set; }
+
     public class AttackResult
     {
         public string winner { get; set; }
         public string GameStatus { get; set; }
         public string AttackState { get; set; }
-        public string AiAttack { get; set; }
+        public string MoveLabel { get; set; }
     }
-
+    public string GetMoveLabel(int x, int y)
+    {
+        return $"{(char)(x + 65)}{y + 1}";
+    }
     public bool CheckWin(char[,] board)
     {
         for (int i = 0; i < board.GetLength(0); i++)
@@ -24,24 +29,25 @@ public class ActionService
         }
         return true;
     }
-    public AttackResult AiAttack(char [,] board, string player)
+    public AttackResult AiAttack(string player, char [,] board)
     {
-        return Attack(player, board, 0, 0);
+        Tuple<int, int> randomMove = GetRandomMoveAndRemove(moves);
+        return Attack(player, board, randomMove.Item1, randomMove.Item2);
     }
      public static List<Tuple<int, int>> GenerateAllMoves()
     {
-        List<Tuple<int, int>> moves = new List<Tuple<int, int>>();
+        List<Tuple<int, int>> listMoves = new List<Tuple<int, int>>();
         for (int y = 0; y < 10; y++)
         {
             for (int x = 0; x < 10; x++)
             {
-                moves.Add(new Tuple<int, int>(x, y));
+                listMoves.Add(new Tuple<int, int>(x, y));
             }
         }
-
-        return moves;
+        Shuffle(listMoves);
+        return listMoves;
     }
-    public static void Shuffle<T>(List<T> list)
+    public static List<T> Shuffle<T>(List<T> list)
     {
         Random rng = new Random();
         int n = list.Count;
@@ -53,15 +59,22 @@ public class ActionService
             list[k] = list[n];
             list[n] = value;
         }
+        return list;
+    }
+    public static Tuple<int, int> GetRandomMoveAndRemove(List<Tuple<int, int>> listMove)
+    {
+        Random rng = new Random();
+        int index = rng.Next(listMove.Count);
+        Tuple<int, int> randomMove = listMove[index];
+        listMove.RemoveAt(index);
+        return randomMove;
     }
     public AttackResult Attack(string player, char [,] board, int x, int y)
     {
         var playerBoard = board;
         var result = new AttackResult();
         var attackState = "";
-        var winner = "";
         var gameStatus = "";
-        var aiAttack = "";
 
         if (playerBoard[y, x] == '\0')
         {
@@ -80,15 +93,11 @@ public class ActionService
             if (isWin)
             {
                 gameStatus = "Win";
-                winner = player;
             }
         }
-
-        result.winner = winner;
         result.GameStatus = gameStatus;
         result.AttackState = attackState;
-        result.AiAttack = aiAttack;
-
+        result.MoveLabel = GetMoveLabel(x, y);
         return result;
     }
 }
