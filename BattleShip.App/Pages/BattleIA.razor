@@ -1,0 +1,59 @@
+﻿@page "/BattleIA"
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+
+
+<PageTitle>1 VS IA</PageTitle>
+
+
+
+<div id="blurCard" class="back">
+    <div id="backBoard">
+        <table id="mainBoard">
+            @for (int i = 0; i < 10; i++)
+            {
+                <tr>
+                    @for (int j = 0; j < 10; j++)
+                    {
+                        var localX = j;
+                        var localY = i;
+                        <td class="tdGame" id="@($"cell_{i}_{j}")" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"></td>
+                    }
+                </tr>
+            }
+
+
+        </table>
+    </div>
+
+    <div id="toolData">
+        <div>
+            <table id="boardPlayer">
+                @for (int i = 0; i < 10; i++)
+                {
+                    <tr>
+                        @for (int j = 0; j < 10; j++)
+                        {
+                            <td class="tdPlayer" id="@($"player_{i}_{j}")" data-X="@($"{j}")" data-Y="@($"{i}")"></td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    
+</div>
+
+
+@code {
+    async void HandleCellClick(int x, int y)
+    {
+        // Convertir les chaînes en entiers si nécessaire
+
+
+        await JSRuntime.InvokeVoidAsync("console.log", $"Clicked on cell ({x}, {y})");
+
+        // Traitez la réponse si nécessaire
+    }
+}
+
