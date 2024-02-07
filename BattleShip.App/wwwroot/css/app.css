@@ -232,4 +232,94 @@ body {
 
 #toolData {
     width: 15%;
+    padding: 5%;
+    background: #303030ba;
+    border-radius: 25px;
+}
+
+.shipCell {
+    border-radius: 5px;
+}   
+
+td {
+    border-radius: 1px;
+}
+
+.Aship {
+    background-color: #cb997e
+}
+
+.Bship {
+    background-color: #ddbea9
+}
+
+.Cship {
+    background-color: #ffe8d6
+}
+
+.Dship {
+    background-color: #b7b7a4
+}
+
+.Eship {
+    background-color: #a5a58d
+}
+
+.Fship {
+    background-color: #6b705c
+}
+
+.hitCell {
+    background-color: #ff0000;
+    background: url('images/fire-flame.gif') no-repeat center;
+    border-radius: 5px;
+}
+
+.Hit {
+    background-color: #ff0000;
+    background: url('images/fire-flame.gif') no-repeat center;
+    border-radius: 5px;
+}
+
+.Miss {
+    background: none;
+    cursor: not-allowed;
+    /* background: url('images/water.gif') no-repeat center; */
+}
+
+.Miss:hover {
+    background: none;
+}
+
+.shipInfo {
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+#info {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+
+
+@keyframes explosionAnimation {
+    0% {
+        background: none;
+    }
+    50% {
+        background: #ff0000;
+    }
+    100% {
+        background: none;
+    }
+}
+
+.attack {
+    animation: expandCard 10s ease forwards;
 }
