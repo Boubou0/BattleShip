@@ -214,6 +214,7 @@ body {
 
 
 .tdGame {
+    position: relative;
     width: 60px;
     height: 60px;
     background-color: rgba(255, 255, 255, 0.5);
@@ -224,7 +225,29 @@ body {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
+.Miss {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.Miss::after {
+    content: '';
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 10px; 
+    height: 10px; 
+    background-color: black;
+    border-radius: 50%; 
+}
+
+.Miss:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+
 .tdPlayer{
+    position: relative;
     width: 20px;
     height: 20px;
     background-color: rgba(255, 255, 255, 0.4);
@@ -281,15 +304,6 @@ td {
     border-radius: 5px;
 }
 
-.Miss {
-    background: none;
-    cursor: not-allowed;
-    /* background: url('images/water.gif') no-repeat center; */
-}
-
-.Miss:hover {
-    background: none;
-}
 
 .shipInfo {
     border-radius: 5px;
@@ -306,7 +320,9 @@ td {
     justify-content: flex-end;
 }
 
-
+.attack {
+    animation: explosionAnimation 1s ease;
+}
 
 @keyframes explosionAnimation {
     0% {
@@ -320,6 +336,45 @@ td {
     }
 }
 
-.attack {
-    animation: expandCard 10s ease forwards;
+.youWin {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    align-items: center;
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(30,30,30,0.8);
+    backdrop-filter: blur(25px);
+}
+
+
+.imgOneShip {
+    background: none;
+    background: url('images/oneBoat.png') no-repeat center;
+    background-size: 100%;
+}
+
+.imgShipLeft {
+    border-radius: 0px;
+    background: none;
+    background: url('images/boat2_left.png') no-repeat center;
+    background-size: 100%;
+}
+
+.imgShipRight {
+    border-radius: 0px;
+    background: none;
+    background: url('images/boat2_right.png') no-repeat center;
+    background-size: 100%;
+}
+
+.imgShipMid {
+    border-radius: 0px;
+    background: none;
+    background: url('images/boatmid.png') no-repeat center;
+    background-size: 100%;
 }
