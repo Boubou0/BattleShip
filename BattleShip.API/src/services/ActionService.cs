@@ -74,7 +74,6 @@ public class ActionService
         var playerBoard = board;
         var result = new AttackResult();
         var attackState = "";
-        var winner = "";
         var gameStatus = "";
 
         if (playerBoard[y, x] == '\0')
@@ -94,11 +93,8 @@ public class ActionService
             if (isWin)
             {
                 gameStatus = "Win";
-                winner = player;
             }
         }
-
-        result.winner = winner;
         result.GameStatus = gameStatus;
         result.AttackState = attackState;
         result.MoveLabel = GetMoveLabel(x, y);

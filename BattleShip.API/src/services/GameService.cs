@@ -10,13 +10,18 @@ public class GameService
         public string Player2 { get; set; }
         public char[,] Player1Board { get; set; }
         public char[,] Player2Board { get; set; }
+        public string Winner { get; set; }
     }
 
     public List<Partie> parties { get; set; }
-    public Partie currentPartie { get; set; }
     public GameService()
     {
         parties = new List<Partie>();
+    }
+    public void endGame(Guid gameId)
+    {
+        var currentGame = parties.FirstOrDefault(p => p.Id == gameId);
+        currentGame.isFinished = true;
     }
     public Partie InitGame(){
         var partie = new Partie
@@ -25,7 +30,8 @@ public class GameService
             Player1 = "Joueur 1",
             Player2 = "Joueur 2",
             Player1Board = BoardService.CreateBoard(10),
-            Player2Board = BoardService.CreateBoard(10)
+            Player2Board = BoardService.CreateBoard(10),
+            Winner = ""
         };
         return partie;
     }
