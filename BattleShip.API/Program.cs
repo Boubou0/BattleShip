@@ -93,7 +93,7 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
     if (attack.AttackState != "Hit")
     {
         var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-        listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel));
+        listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
         while( aiAttack.AttackState == "Hit"){
             if (aiAttack.GameStatus != "")
             {
@@ -102,7 +102,7 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
                 break;
             }
             aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel));
+            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
         }
     }
     if (attack.GameStatus == "Win")
@@ -110,7 +110,7 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
         game.Winner = game.Player1;
         gameService.endGame(gameId);
     }
-    var attackDTO = new AttackDTO(attack.GameStatus, attack.AttackState, attack.MoveLabel);
+    var attackDTO = new AttackDTO(attack.GameStatus, attack.AttackState, attack.MoveLabel, attack.sunkunBoat);
     var result = new listAttackDTO(attackDTO, listAiAttack, game.Winner);
     return Results.Ok(result);
 })
