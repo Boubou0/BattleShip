@@ -102,6 +102,13 @@
         
     </div>
 
+    <script>
+        window.playSound = function(soundFileName) {
+            var audio = new Audio(soundFileName);
+            audio.play();
+        }
+    </script>
+
 
 @code {
     string? partieId;
@@ -228,6 +235,7 @@
                 if (playerMove.AttackState == "Hit")
                 {
                     await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez touché un bateau");
+                    await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3");
 
                     
                     gridPosition[positionAttack] = playerMove.AttackState;
@@ -243,6 +251,8 @@
                     classAttack = "";
 
                     await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez raté votre attaque");
+                    await JSRuntime.InvokeVoidAsync("playSound", "/css/images/plouf.m4a");
+
                      // Réponse de l'attaque
 
                     bool hasAttack = false;
