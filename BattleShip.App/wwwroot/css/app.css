@@ -214,6 +214,7 @@ body {
 
 
 .tdGame {
+    position: relative;
     width: 60px;
     height: 60px;
     background-color: rgba(255, 255, 255, 0.5);
@@ -224,7 +225,29 @@ body {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
+.Miss {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.Miss::after {
+    content: '';
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 10px; 
+    height: 10px; 
+    background-color: black;
+    border-radius: 50%; 
+}
+
+.Miss:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+
 .tdPlayer{
+    position: relative;
     width: 20px;
     height: 20px;
     background-color: rgba(255, 255, 255, 0.4);
@@ -232,4 +255,126 @@ body {
 
 #toolData {
     width: 15%;
+    padding: 5%;
+    background: #303030ba;
+    border-radius: 25px;
+}
+
+.shipCell {
+    border-radius: 5px;
+}   
+
+td {
+    border-radius: 1px;
+}
+
+.Aship {
+    background-color: #cb997e
+}
+
+.Bship {
+    background-color: #ddbea9
+}
+
+.Cship {
+    background-color: #ffe8d6
+}
+
+.Dship {
+    background-color: #b7b7a4
+}
+
+.Eship {
+    background-color: #a5a58d
+}
+
+.Fship {
+    background-color: #6b705c
+}
+
+.hitCell {
+    background-color: #ff0000;
+    background: url('images/fire-flame.gif') no-repeat center;
+    border-radius: 5px;
+}
+
+.Hit {
+    background-color: #ff0000;
+    background: url('images/fire-flame.gif') no-repeat center;
+    border-radius: 5px;
+}
+
+
+.shipInfo {
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+#info {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.attack {
+    animation: explosionAnimation 1s ease;
+}
+
+@keyframes explosionAnimation {
+    0% {
+        background: none;
+    }
+    50% {
+        background: #ff0000;
+    }
+    100% {
+        background: none;
+    }
+}
+
+.youWin {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    align-items: center;
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(30,30,30,0.8);
+    backdrop-filter: blur(25px);
+}
+
+
+.imgOneShip {
+    background: none;
+    background: url('images/oneBoat.png') no-repeat center;
+    background-size: 100%;
+}
+
+.imgShipLeft {
+    border-radius: 0px;
+    background: none;
+    background: url('images/boat2_left.png') no-repeat center;
+    background-size: 100%;
+}
+
+.imgShipRight {
+    border-radius: 0px;
+    background: none;
+    background: url('images/boat2_right.png') no-repeat center;
+    background-size: 100%;
+}
+
+.imgShipMid {
+    border-radius: 0px;
+    background: none;
+    background: url('images/boatmid.png') no-repeat center;
+    background-size: 100%;
 }

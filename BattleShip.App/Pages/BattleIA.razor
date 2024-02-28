@@ -1,14 +1,23 @@
 ﻿@page "/BattleIA"
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
+@using System.Text.Json;
+
+
 
 
 <PageTitle>1 VS IA</PageTitle>
 
+<div id="winYoupi" class="@win" style="display: none;">
+    <img src="css/images/youpi.gif" alt="Youpi" />
+    <h2> Vous avez gagné(e) ! </h2>
+    <a class="button-21" style="margin: 10px;"  onclick="@(() => RestartGame())" role="button">Recommencer</a>
+    <a class="button-21" role="button" href="/">Menu principal</a>
 
+</div>
 
 <div id="blurCard" class="back">
-    <div id="backBoard">
+    <div id="backBoard" class="@classAttack">
         <table id="mainBoard">
             @for (int i = 0; i < 10; i++)
             {
@@ -17,43 +26,260 @@
                     {
                         var localX = j;
                         var localY = i;
-                        <td class="tdGame" id="@($"cell_{i}_{j}")" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"></td>
+                        var cellId = $"cell_{i}_{j}";
+
+                        string cellClass = gridPosition.ContainsKey(cellId) ? gridPosition[cellId] : "";
+                        <td class="tdGame @cellClass" id="@cellId" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"></td>
                     }
                 </tr>
             }
-
-
         </table>
     </div>
 
     <div id="toolData">
-        <div>
-            <table id="boardPlayer">
-                @for (int i = 0; i < 10; i++)
-                {
+                <table id="boardPlayer" class="@classPlayer2Attack">
+                    @for (int i = 0; i < 10; i++)
+                    {
+                        <tr>
+                            @for (int j = 0; j < 10; j++)
+                            {
+                                var cellId = $"player_{i}_{j}";
+                                string cellClass = playerPositions.ContainsKey(cellId) ? playerPositions[cellId] : "";
+                                <td class="tdPlayer @cellClass" id="@cellId" data-X="@j" data-Y="@i"></td>
+                            }
+                        </tr>
+                    }
+                </table>
+
+            <div id="info">
+                <table>
                     <tr>
-                        @for (int j = 0; j < 10; j++)
-                        {
-                            <td class="tdPlayer" id="@($"player_{i}_{j}")" data-X="@($"{j}")" data-Y="@($"{i}")"></td>
-                        }
-                    </tr>
-                }
-            </table>
+                        <td class="shipInfo Aship imgShipLeft"></td>
+                        <td class="shipInfo Aship imgShipMid"></td>
+                        <td class="shipInfo Aship imgShipMid"></td>
+                        <td class="shipInfo Aship imgShipRight"></td>
+                    </tr
+                </table>
+
+                <table>
+                    <tr>
+                        <td class="shipInfo Bship imgShipLeft"></td>
+                        <td class="shipInfo Bship imgShipMid"></td>
+                        <td class="shipInfo Bship imgShipRight"></td>
+                    </tr
+                </table>
+
+                <table>
+                    <tr>
+                        <td class="shipInfo Cship imgShipLeft"></td>
+                        <td class="shipInfo Cship imgShipMid"></td>
+                        <td class="shipInfo Cship imgShipRight"></td>
+                    </tr
+                </table>
+
+                <table>
+                    <tr>
+                        <td class="shipInfo Dship imgShipLeft"></td>
+                        <td class="shipInfo Dship imgShipRight"></td>
+                    </tr
+                </table>
+
+                <table>
+                    <tr>
+                        <td class="shipInfo Eship imgShipLeft"></td>
+                        <td class="shipInfo Eship imgShipRight"></td>
+                    </tr
+                </table>
+
+                <table>
+                    <tr>
+                        <td class="shipInfo Fship imgOneShip"></td>
+                    </tr
+                </table>
+
+            </div>
         </div>
+        
     </div>
-    
-</div>
+
+    <script>
+        window.playSound = function(soundFileName) {
+            var audio = new Audio(soundFileName);
+            audio.play();
+        }
+    </script>
 
 
 @code {
+    string? partieId;
+
+    string win = "";
+
+    string classAttack = "";
+    string classPlayer2Attack = "";
+    Dictionary<string, List<string>> player1Board;
+    Dictionary<string, string> playerPositions = new Dictionary<string, string>();
+
+    Dictionary<string, string> gridPosition = new Dictionary<string, string>();
+
+    CreateGameDTO content;
+        
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await StartGame();
+    }
+
+    async Task StartGame(){
+         var response = await HttpClient.GetAsync("http://localhost:5126/StartGame");
+
+        if (response.IsSuccessStatusCode)
+        {
+            content = await response.Content.ReadFromJsonAsync<CreateGameDTO>();
+            await FetchGameData();
+
+        }
+        else
+        {
+           await JSRuntime.InvokeVoidAsync("console.log", "Erreur :()");
+        } 
+    }
+
+    async void RestartGame(){
+        win = "";
+        classAttack = "";
+        classPlayer2Attack = "";
+        playerPositions = new Dictionary<string, string>();
+        gridPosition = new Dictionary<string, string>();
+        await StartGame();
+    }
+
+    async Task FetchGameData()
+    {
+            partieId = content.GameId.ToString();
+
+            foreach (var ship in content.Player1Position)
+            {
+                @* await JSRuntime.InvokeVoidAsync("console.log", $"Ship is {ship.Key} {partieId}"); *@
+                foreach (var positionShip in ship.Value)
+                {
+                    var x = LetterToNumber(positionShip.Substring(0, 1));
+                    var y = int.Parse(positionShip.Substring(1, 1));
+
+                    @* await JSRuntime.InvokeVoidAsync("console.log", $"X is {x} and Y is {y}");
+                    await JSRuntime.InvokeVoidAsync("console.log", $"player_{y}_{x}"); *@
+
+                    var positionKey = $"player_{y}_{x}";
+                    if (playerPositions.ContainsKey(positionKey) && playerPositions[positionKey].Contains("Hit"))
+                    {
+                    }
+                    else
+                    {
+                        playerPositions[positionKey] = ship.Key + "ship shipCell";
+                    }
+                }
+            }
+
+    }
+
+
+    int LetterToNumber(string letter)
+    {
+        return letter.ToUpper() switch
+        {
+            "A" => 0,
+            "B" => 1,
+            "C" => 2,
+            "D" => 3,
+            "E" => 4,
+            "F" => 5,
+            "G" => 6,
+            "H" => 7,
+            "I" => 8,
+            "J" => 9,
+            _ => -1
+        };
+    }
+
     async void HandleCellClick(int x, int y)
     {
-        // Convertir les chaînes en entiers si nécessaire
+        classPlayer2Attack = "";
+        await JSRuntime.InvokeVoidAsync("console.log", $"Clicked on cell ({x}, {y}) and partieId is {partieId}");
+        
+        var response = await HttpClient.GetAsync($"http://localhost:5126/Attack/{partieId}/{x}/{y}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            @* var jsonResponse = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonSerializer.Deserialize<listAttackDTO>(jsonResponse); *@
+            listAttackDTO responseObject = await response.Content.ReadFromJsonAsync<listAttackDTO>();
 
 
-        await JSRuntime.InvokeVoidAsync("console.log", $"Clicked on cell ({x}, {y})");
+            string winner = responseObject.winner;
+            AttackDTO playerMove = responseObject.playerMove;
+            
 
-        // Traitez la réponse si nécessaire
+            // Ataque
+            if (winner != "")
+            {
+                win = "youWin";
+                StateHasChanged(); 
+            }
+            else
+            {
+
+                var positionAttack = $"cell_{y}_{x}";
+
+                // Résulat de l'attaque
+                if (playerMove.AttackState == "Hit")
+                {
+                    await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez touché un bateau");
+                    await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3");
+
+                    
+                    gridPosition[positionAttack] = playerMove.AttackState;
+                    classAttack = "attack";
+                    StateHasChanged(); 
+                    await Task.Delay(1500); 
+                    classAttack = "";
+                    StateHasChanged();
+                }
+                else
+                {
+                    gridPosition[positionAttack] = playerMove.AttackState;
+                    classAttack = "";
+
+                    await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez raté votre attaque");
+                    await JSRuntime.InvokeVoidAsync("playSound", "/css/images/plouf.m4a");
+
+                     // Réponse de l'attaque
+
+                    bool hasAttack = false;
+                    foreach(AttackDTO attack in responseObject.listAiAttack){
+                        var moveLabel = attack.MoveLabel;
+
+                        if (attack.AttackState == "Hit")
+                        {
+                            hasAttack = true;
+                        }
+
+                        int xMoveIA = LetterToNumber(moveLabel.Substring(0, 1));
+                        int yMoveIA = int.Parse(moveLabel.Substring(1, 1));
+                        string positionKey = $"player_{yMoveIA}_{xMoveIA}";
+
+                        playerPositions[positionKey] = attack.AttackState;
+
+                    }
+                    classPlayer2Attack = hasAttack ? "attack" : "";
+
+
+                    await FetchGameData(); // Rechargez les données du jeu après l'attaque
+                    StateHasChanged(); 
+                }
+            }
+
+            
+        }
     }
 }
-
