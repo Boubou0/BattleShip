@@ -9,10 +9,10 @@
 <AuthorizeView>
     <Authorized>
         Hello, @context.User.Identity.Name!
-        <a href="#" @onclick="BeginSignOut">Log out</a>
+        <a href="#" @onclick="BeginSignOut" class="button-21 signout" role="button">Log out</a>
     </Authorized>
     <NotAuthorized>
-        <a href="authentication/login">Log in</a>
+        <a href="authentication/login" class="button-21" role="button">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 

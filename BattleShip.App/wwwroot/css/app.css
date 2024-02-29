@@ -95,7 +95,7 @@ body {
         background-position: 0% 50%; /* Position finale, retour à la position de départ */
     }
 }
-#blurCard {
+.blurCard {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -160,7 +160,26 @@ body {
     box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
   }
 
+  .signout{
+    background-image: linear-gradient(1deg, #a51e1e, #dd2d2d 99%);
+    margin: 0 10px;
+  }
 
+
+
+  .loginSection {
+    display: flex;
+    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    position: absolute;
+    z-index: 1;
+    backdrop-filter: blur(25px);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
 
 
   #blurCard.back {
