@@ -17,7 +17,7 @@
     <a class="button-21" role="button" href="/">Menu principal</a>
 </div>
 
-<div id="blurCard" class="back">
+<div id="blurCard" class="back blurCard">
     <div id="backBoard" class="@classAttack">
         <table id="mainBoard">
             @for (int i = 0; i < 10; i++)
@@ -269,7 +269,7 @@
                 if (playerMove.AttackState == "Hit")
                 {
                     await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez touché un bateau");
-                    @* await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3"); // ne s'arrête pas *@ 
+                    await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3"); // ne s'arrête pas 
 
                     
                     gridPosition[positionAttack] = playerMove.AttackState;

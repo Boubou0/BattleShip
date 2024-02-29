@@ -2,17 +2,14 @@
 
 @inherits LayoutComponentBase
 
+
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4 loginSection">
             <AccessControl />  
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <a class="button-21" role="button" href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            @* <img src="css/images/user.svg" alt="User" class="logo" /> *@
         </div>
-
         <article class="content px-4">
             @Body
         </article>
