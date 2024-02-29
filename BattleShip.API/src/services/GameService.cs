@@ -30,7 +30,7 @@ public class GameService
         var partie = new Partie
         {
             Id = Guid.NewGuid(),
-            Player1 = "Joueur 1",
+            Player1 = "Joueur ",
             Player2 = "Joueur 2",
             Player1Board = BoardService.CreateBoard(10),
             Player2Board = BoardService.CreateBoard(10),
