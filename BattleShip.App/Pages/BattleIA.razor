@@ -11,10 +11,10 @@
 
 <div id="winYoupi" class="@win" style="display: none;">
     <img src="css/images/youpi.gif" alt="Youpi" />
-    <h2> Vous avez gagné(e) ! </h2>
+    <h2 id="youWin" style="display: none;"> Vous avez gagné(e) ! </h2>
+    <h2 id="youLoose" style="display: none;"> Vous avez perdu(e) .. </h2>
     <a class="button-21" style="margin: 10px;"  onclick="@(() => RestartGame())" role="button">Recommencer</a>
     <a class="button-21" role="button" href="/">Menu principal</a>
-
 </div>
 
 <div id="blurCard" class="back">
@@ -30,7 +30,7 @@
                         var cellId = $"cell_{i}_{j}";
 
                         string cellClass = gridPosition.ContainsKey(cellId) ? gridPosition[cellId] : "";
-                        <td class="tdGame @cellClass" id="@cellId" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"></td>
+                        <td class="tdGame @cellClass" id="@cellId" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"><div class="plouf"></div></td>
                     }
                 </tr>
             }
@@ -52,53 +52,69 @@
                     }
                 </table>
 
-            <div id="info">
-                <table>
-                    <tr>
-                        <td class="shipInfo Aship imgShipLeft"></td>
-                        <td class="shipInfo Aship imgShipMid"></td>
-                        <td class="shipInfo Aship imgShipMid"></td>
-                        <td class="shipInfo Aship imgShipRight"></td>
-                    </tr
-                </table>
+            <div id="dataInfo">
 
-                <table>
-                    <tr>
-                        <td class="shipInfo Bship imgShipLeft"></td>
-                        <td class="shipInfo Bship imgShipMid"></td>
-                        <td class="shipInfo Bship imgShipRight"></td>
-                    </tr
-                </table>
+                <div id="history">
+                    <h3>Historique</h3>
+                    <div id="historyContent">
+                        <ul>
+                            @* @foreach (var attack in player1Board)
+                            {
+                                <li>@attack.Key</li>
+                            } *@
+                        </ul>
+                    </div>
+                </div>
 
-                <table>
-                    <tr>
-                        <td class="shipInfo Cship imgShipLeft"></td>
-                        <td class="shipInfo Cship imgShipMid"></td>
-                        <td class="shipInfo Cship imgShipRight"></td>
-                    </tr
-                </table>
+                <div id="info">
+                    <table>
+                        <tr>
+                            <td class="shipInfo Aship imgShipLeft"></td>
+                            <td class="shipInfo Aship imgShipMid"></td>
+                            <td class="shipInfo Aship imgShipMid"></td>
+                            <td class="shipInfo Aship imgShipRight"></td>
+                        </tr
+                    </table>
 
-                <table>
-                    <tr>
-                        <td class="shipInfo Dship imgShipLeft"></td>
-                        <td class="shipInfo Dship imgShipRight"></td>
-                    </tr
-                </table>
+                    <table>
+                        <tr>
+                            <td class="shipInfo Bship imgShipLeft"></td>
+                            <td class="shipInfo Bship imgShipMid"></td>
+                            <td class="shipInfo Bship imgShipRight"></td>
+                        </tr
+                    </table>
 
-                <table>
-                    <tr>
-                        <td class="shipInfo Eship imgShipLeft"></td>
-                        <td class="shipInfo Eship imgShipRight"></td>
-                    </tr
-                </table>
+                    <table>
+                        <tr>
+                            <td class="shipInfo Cship imgShipLeft"></td>
+                            <td class="shipInfo Cship imgShipMid"></td>
+                            <td class="shipInfo Cship imgShipRight"></td>
+                        </tr
+                    </table>
 
-                <table>
-                    <tr>
-                        <td class="shipInfo Fship imgOneShip"></td>
-                    </tr
-                </table>
+                    <table>
+                        <tr>
+                            <td class="shipInfo Dship imgShipLeft"></td>
+                            <td class="shipInfo Dship imgShipRight"></td>
+                        </tr
+                    </table>
 
+                    <table>
+                        <tr>
+                            <td class="shipInfo Eship imgShipLeft"></td>
+                            <td class="shipInfo Eship imgShipRight"></td>
+                        </tr
+                    </table>
+
+                    <table>
+                        <tr>
+                            <td class="shipInfo Fship imgOneShip"></td>
+                        </tr
+                    </table>
+
+                </div>
             </div>
+            
         </div>
         
     </div>
@@ -108,6 +124,13 @@
             var audio = new Audio(soundFileName);
             audio.play();
         }
+
+        window.stopSound = function() {
+        var audio = document.querySelector("audio");
+        if (audio) {
+            audio.pause();
+        }
+    }
     </script>
 
 
@@ -143,7 +166,7 @@
         }
         else
         {
-           await JSRuntime.InvokeVoidAsync("console.log", "Erreur :()");
+           await JSRuntime.InvokeVoidAsync("console.log", "Erreur :(");
         } 
     }
 
@@ -151,9 +174,11 @@
         win = "";
         classAttack = "";
         classPlayer2Attack = "";
+        await JSRuntime.InvokeVoidAsync("stopSound");
         playerPositions = new Dictionary<string, string>();
         gridPosition = new Dictionary<string, string>();
         await StartGame();
+        StateHasChanged();
     }
 
     async Task FetchGameData()
@@ -224,7 +249,15 @@
             // Ataque
             if (winner != "")
             {
-                win = "youWin";
+                win = "youEnd";
+                if (winner == "Joueur 1")
+                {
+                    win += " youWin";
+                }
+                else
+                {
+                    win += " youLoose";
+                }
                 StateHasChanged(); 
             }
             else
@@ -236,7 +269,7 @@
                 if (playerMove.AttackState == "Hit")
                 {
                     await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez touché un bateau");
-                    await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3");
+                    @* await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3"); // ne s'arrête pas *@ 
 
                     
                     gridPosition[positionAttack] = playerMove.AttackState;
@@ -263,6 +296,8 @@
                         if (attack.AttackState == "Hit")
                         {
                             hasAttack = true;
+                            await JSRuntime.InvokeVoidAsync("playSound", "/css/images/boomAd.mp3");
+
                         }
 
                         int xMoveIA = LetterToNumber(moveLabel.Substring(0, 1));
