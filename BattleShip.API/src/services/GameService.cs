@@ -26,11 +26,11 @@ public class GameService
         var currentGame = parties.FirstOrDefault(p => p.Id == gameId);
         currentGame.isFinished = true;
     }
-    public Partie InitGame(){
+    public Partie InitGame(string username){
         var partie = new Partie
         {
             Id = Guid.NewGuid(),
-            Player1 = "Joueur ",
+            Player1 = username,
             Player2 = "Joueur 2",
             Player1Board = BoardService.CreateBoard(10),
             Player2Board = BoardService.CreateBoard(10),

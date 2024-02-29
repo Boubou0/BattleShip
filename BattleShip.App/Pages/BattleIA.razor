@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
 @using System.Text.Json;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
 
 
@@ -149,14 +150,20 @@
     CreateGameDTO content;
         
 
-
     protected override async Task OnInitializedAsync()
     {
-        await StartGame();
+        try
+        { 
+            await StartGame();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 
     async Task StartGame(){
-         var response = await HttpClient.GetAsync("http://localhost:5126/StartGame");
+         var response = await HttpClient.GetAsync("/StartGame");
 
         if (response.IsSuccessStatusCode)
         {
@@ -233,7 +240,7 @@
         classPlayer2Attack = "";
         await JSRuntime.InvokeVoidAsync("console.log", $"Clicked on cell ({x}, {y}) and partieId is {partieId}");
         
-        var response = await HttpClient.GetAsync($"http://localhost:5126/Attack/{partieId}/{x}/{y}");
+        var response = await HttpClient.GetAsync($"/Attack/{partieId}/{x}/{y}");
 
         if (response.IsSuccessStatusCode)
         {
