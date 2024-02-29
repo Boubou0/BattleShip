@@ -48,6 +48,8 @@ app.MapGet("/StartGame", () =>
     gameService.parties.Add(currentPartie);
     BoardService.PlaceShips(currentPartie.Player1Board, BoardService.GetAllShips());
     BoardService.PlaceShips(currentPartie.Player2Board, BoardService.GetAllShips());
+    currentPartie.Player1StartingBoard = (char[,])currentPartie.Player1Board.Clone();
+    currentPartie.Player2StartingBoard = (char[,])currentPartie.Player2Board.Clone();
     var positionsPlayer1 = BoardService.ListShipPositions(currentPartie.Player1Board);
     actionService.moves = ActionService.GenerateAllMoves();
     var boards = new CreateGameDTO(currentPartie.Id, positionsPlayer1);
@@ -96,6 +98,19 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
     }
     var listAiAttack = new List<AttackDTO>();
     var attack = actionService.Attack(game.Player1, playerBoard, x, y);
+    var opponentBoard = BoardService.ListShipPositions(game.Player2StartingBoard);
+    if (attack.sunkunBoat != "")
+    {
+        var shipLetter = attack.sunkunBoat;
+        if (opponentBoard.ContainsKey(shipLetter))
+        {
+            var positions = opponentBoard[shipLetter];
+            var positionsString = string.Join(",", positions);
+            attack.sunkunBoat = $"{shipLetter}:{positionsString}";
+        }
+    }
+
+
     if (attack.AttackState != "Hit")
     {
         var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
