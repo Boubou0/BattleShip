@@ -12,13 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<BoardService>();
 builder.Services.AddSingleton<ActionService>();
 builder.Services.AddSingleton<GameService>();
-builder.Services.AddCors(option => 
-{
-    option.AddDefaultPolicy(builder => 
-    {
-        builder.WithOrigins("http://localhost:5249").AllowAnyHeader().AllowAnyMethod();
-    });
-});
+builder.Services.AddCors();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,7 +21,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors();
+
 app.UseHttpsRedirection();
 app.MapGet("/GetGames", () => {
     var gameService = app.Services.GetRequiredService<GameService>();
@@ -99,7 +93,7 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
     if (attack.AttackState != "Hit")
     {
         var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-        listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+        listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel));
         while( aiAttack.AttackState == "Hit"){
             if (aiAttack.GameStatus != "")
             {
@@ -108,7 +102,7 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
                 break;
             }
             aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel));
         }
     }
     if (attack.GameStatus == "Win")
@@ -116,7 +110,7 @@ app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
         game.Winner = game.Player1;
         gameService.endGame(gameId);
     }
-    var attackDTO = new AttackDTO(attack.GameStatus, attack.AttackState, attack.MoveLabel, attack.sunkunBoat);
+    var attackDTO = new AttackDTO(attack.GameStatus, attack.AttackState, attack.MoveLabel);
     var result = new listAttackDTO(attackDTO, listAiAttack, game.Winner);
     return Results.Ok(result);
 })

@@ -93,6 +93,20 @@ public class BoardService
         }
     }
 
+    public static void AfficherBoard(char[,] board)
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            for (int j = 0; j < board.GetLength(1); j++)
+            {
+                Console.Write(board[i, j] == '\0' ? "." : board[i, j].ToString());
+                Console.Write(" ");
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+    }
+
     public static Dictionary<string, List<string>> ListShipPositions(char[,] board)
     {
         var shipPositions = new Dictionary<string, List<string>>();
