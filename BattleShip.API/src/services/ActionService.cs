@@ -10,6 +10,7 @@ public class ActionService
         public string GameStatus { get; set; }
         public string AttackState { get; set; }
         public string MoveLabel { get; set; }
+        public string sunkunBoat { get; set; }
     }
     public string GetMoveLabel(int x, int y)
     {
@@ -29,6 +30,7 @@ public class ActionService
         }
         return true;
     }
+
     public AttackResult AiAttack(string player, char [,] board)
     {
         Tuple<int, int> randomMove = GetRandomMoveAndRemove(moves);
@@ -75,6 +77,8 @@ public class ActionService
         var result = new AttackResult();
         var attackState = "";
         var gameStatus = "";
+        var sunkunBoat = "";
+        var shipLetter = FindShipNameForPosition(board, GetMoveLabel(x, y));
 
         if (playerBoard[y, x] == '\0')
         {
@@ -89,6 +93,7 @@ public class ActionService
         {
             playerBoard[y, x] = 'X';
             attackState = "Hit";
+            sunkunBoat = CheckSunkShip(playerBoard, shipLetter);
             bool isWin = CheckWin(playerBoard);
             if (isWin)
             {
@@ -98,6 +103,37 @@ public class ActionService
         result.GameStatus = gameStatus;
         result.AttackState = attackState;
         result.MoveLabel = GetMoveLabel(x, y);
+        result.sunkunBoat = sunkunBoat;
         return result;
+    }
+    public static string FindShipNameForPosition(char[,] board, string position)
+    {
+        Dictionary<string, List<string>> shipPositions = BoardService.ListShipPositions(board);
+
+        foreach (var kvp in shipPositions)
+        {
+            if (kvp.Value.Contains(position))
+            {
+                return kvp.Key;
+            }
+        }
+        return null;
+    }
+
+    public string CheckSunkShip(char[,] board, string shipLetter)
+    {
+        int height = board.GetLength(0);
+        int width = board.GetLength(1);
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if (board[i, j] == shipLetter[0])
+                {
+                    return "";
+                }
+            }
+        }
+        return shipLetter.ToString();
     }
 }
