@@ -2,6 +2,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Diagnostics;
 using BattleShip.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<BoardService>();
 builder.Services.AddSingleton<ActionService>();
 builder.Services.AddSingleton<GameService>();
+builder.Services.AddScoped<LeaderboardService>();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite("Data Source=leaderboard.db"));
 builder.Services.AddCors(option => 
 {
     option.AddDefaultPolicy(builder => 
@@ -29,6 +33,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors();
 app.UseHttpsRedirection();
+
 app.MapGet("/GetGames", () => {
     var gameService = app.Services.GetRequiredService<GameService>();
     var parties = new List<Guid> ();
@@ -77,63 +82,81 @@ app.MapGet("Boards/{gameId}", (Guid gameId) =>
 .WithName("GetBoards")
 .WithDescription("Get the two players boards")
 .WithOpenApi();
-
+app.MapGet("Leaderboard", (IServiceProvider serviceProvider) =>
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var scopedServiceProvider = scope.ServiceProvider;
+        var leaderboardService = scopedServiceProvider.GetRequiredService<LeaderboardService>();
+        var top10 = leaderboardService.GetTop10Users();
+        return Results.Ok(top10);
+    }
+}).WithName("Leaderboard")
+.WithDescription("Get the top 10 players of the leaderboard")
+.WithOpenApi();
 app.MapGet("Attack/{gameId}/{x}/{y}", (Guid gameId, int x, int y) =>
 {
-    var gameService = app.Services.GetRequiredService<GameService>();
-    var actionService = app.Services.GetRequiredService<ActionService>();
-    var game = gameService.parties.FirstOrDefault(p => p.Id == gameId);
-    if (game == null)
+    using (var scope = app.Services.CreateScope())
     {
-        return Results.NotFound("Game not found");
-    }
-    if (game.isFinished)
-    {
-        return Results.BadRequest("Game is finished");
-    }
-    var playerBoard = game.Player2Board;
-    if (playerBoard[y, x] == 'O' || playerBoard[y, x] == 'X')
-    {
-        return Results.BadRequest("Position already attacked");
-    }
-    var listAiAttack = new List<AttackDTO>();
-    var attack = actionService.Attack(game.Player1, playerBoard, x, y);
-    var opponentBoard = BoardService.ListShipPositions(game.Player2StartingBoard);
-    if (attack.sunkunBoat != "")
-    {
-        var shipLetter = attack.sunkunBoat;
-        if (opponentBoard.ContainsKey(shipLetter))
+        var scopedServiceProvider = scope.ServiceProvider;
+        var leaderBoardService = scopedServiceProvider.GetRequiredService<LeaderboardService>();
+        
+        var gameService = app.Services.GetRequiredService<GameService>();
+        var actionService = app.Services.GetRequiredService<ActionService>();
+        var game = gameService.parties.FirstOrDefault(p => p.Id == gameId);
+        if (game == null)
         {
-            var positions = opponentBoard[shipLetter];
-            var positionsString = string.Join(",", positions);
-            attack.sunkunBoat = $"{shipLetter}:{positionsString}";
+            return Results.NotFound("Game not found");
         }
-    }
-
-
-    if (attack.AttackState != "Hit")
-    {
-        var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-        listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
-        while( aiAttack.AttackState == "Hit"){
-            if (aiAttack.GameStatus != "")
+        if (game.isFinished)
+        {
+            return Results.BadRequest("Game is finished");
+        }
+        var playerBoard = game.Player2Board;
+        if (playerBoard[y, x] == 'O' || playerBoard[y, x] == 'X')
+        {
+            return Results.BadRequest("Position already attacked");
+        }
+        var listAiAttack = new List<AttackDTO>();
+        var attack = actionService.Attack(game.Player1, playerBoard, x, y);
+        var opponentBoard = BoardService.ListShipPositions(game.Player2StartingBoard);
+        if (attack.sunkunBoat != "")
+        {
+            var shipLetter = attack.sunkunBoat;
+            if (opponentBoard.ContainsKey(shipLetter))
             {
-                game.Winner = game.Player2;
-                gameService.endGame(gameId);
-                break;
+                var positions = opponentBoard[shipLetter];
+                var positionsString = string.Join(",", positions);
+                attack.sunkunBoat = $"{shipLetter}:{positionsString}";
             }
-            aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
         }
+
+
+        if (attack.AttackState != "Hit")
+        {
+            var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
+            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+            while( aiAttack.AttackState == "Hit"){
+                if (aiAttack.GameStatus != "")
+                {
+                    game.Winner = game.Player2;
+                    gameService.endGame(gameId);
+                    break;
+                }
+                aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
+                listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+            }
+        }
+        if (attack.GameStatus == "Win")
+        {   
+            game.Winner = game.Player1;
+            leaderBoardService.AddOrUpdateUser(game.Player1, 100);
+            gameService.endGame(gameId);
+        }
+        var attackDTO = new AttackDTO(attack.GameStatus, attack.AttackState, attack.MoveLabel, attack.sunkunBoat);
+        var result = new listAttackDTO(attackDTO, listAiAttack, game.Winner);
+        return Results.Ok(result);
     }
-    if (attack.GameStatus == "Win")
-    {   
-        game.Winner = game.Player1;
-        gameService.endGame(gameId);
-    }
-    var attackDTO = new AttackDTO(attack.GameStatus, attack.AttackState, attack.MoveLabel, attack.sunkunBoat);
-    var result = new listAttackDTO(attackDTO, listAiAttack, game.Winner);
-    return Results.Ok(result);
 })
 .WithName("GetAttack")
 .WithDescription("Get the attack from the turn of player 1 and the AI response")
