@@ -249,7 +249,7 @@
             listAttackDTO responseObject = await response.Content.ReadFromJsonAsync<listAttackDTO>();
 
 
-            string winner = responseObject.winner;
+            string winner = responseObject?.winner ?? "";
             AttackDTO playerMove = responseObject.playerMove;
             
 
@@ -282,9 +282,67 @@
                     gridPosition[positionAttack] = playerMove.AttackState;
                     classAttack = "attack";
                     StateHasChanged(); 
-                    await Task.Delay(1500); 
                     classAttack = "";
-                    StateHasChanged();
+                    await JSRuntime.InvokeVoidAsync("console.log", $"Coucou");
+                    await JSRuntime.InvokeVoidAsync("console.log", $"{playerMove.sunkunBoat}");
+
+                    if(playerMove.sunkunBoat != ""){
+                        string[] parties = playerMove.sunkunBoat.Split(':');
+                        string ship = parties[0]; 
+                        string positionString = parties[1]; 
+                        string[] positionsValeurs = positionString.Split(',');
+
+                        bool isVertical = IsVerticalBoat(positionsValeurs);
+
+                        for(int i = 0; i < positionsValeurs.Length; i++){
+                            int xMove = LetterToNumber(positionsValeurs[i].Substring(0, 1));
+                            int yMove = int.Parse(positionsValeurs[i].Substring(1)) - 1; 
+
+                            string positionKey = $"cell_{yMove}_{xMove}";
+                            await JSRuntime.InvokeVoidAsync("console.log", $"La pos : {positionKey}");
+
+                            switch (positionsValeurs.Length)
+                            {
+                                case 1:
+                                    gridPosition[positionKey] = "imgOneShip";
+                                    break;
+                                case 2:
+                                    if((i == 0 && !isVertical) || (i == 1 && isVertical)){
+                                        gridPosition[positionKey] = "imgShipLeft";
+                                    }else{
+                                        gridPosition[positionKey] = "imgShipRight";
+                                    }
+                                    break;
+                                case 3:
+                                    if((i == 0 && !isVertical) || (i == 2 && isVertical)){
+                                        gridPosition[positionKey] = "imgShipLeft";
+                                    }else if(i == 1){
+                                        gridPosition[positionKey] = "imgShipMid";
+                                    }else{
+                                        gridPosition[positionKey] = "imgShipRight";
+                                    }
+                                    break;
+                                case 4:
+                                    if((i == 0 && !isVertical) || (i == 3 && isVertical)){
+                                        gridPosition[positionKey] = "imgShipLeft";
+                                    }else if((i == 3 && !isVertical) || (i == 0 && isVertical)){
+                                        gridPosition[positionKey] = "imgShipRight";
+                                    }else{
+                                        gridPosition[positionKey] = "imgShipMid";
+                                    }
+                                    break;
+                            }
+                            if(isVertical){
+                                gridPosition[positionKey] += " revert";
+                            }
+                            gridPosition[positionKey] += " boatCell";
+                        }
+                        StateHasChanged();
+
+
+
+
+                    }
                 }
                 else
                 {
@@ -325,4 +383,26 @@
             
         }
     }
+
+
+    bool IsVerticalBoat(string[] positionsValeurs)
+    {
+        if (positionsValeurs.Length == 0)
+        {
+            return true;
+        }
+
+        char firstLetter = positionsValeurs[0][0]; 
+        for (int i = 1; i < positionsValeurs.Length; i++)
+        {
+            if (positionsValeurs[i][0] != firstLetter)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
+
+
