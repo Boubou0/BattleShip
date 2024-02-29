@@ -10,6 +10,9 @@ public class GameService
         public string Player2 { get; set; }
         public char[,] Player1Board { get; set; }
         public char[,] Player2Board { get; set; }
+        public char[,] Player1StartingBoard { get; set; }
+        
+        public char[,] Player2StartingBoard { get; set; }
         public string Winner { get; set; }
     }
 
