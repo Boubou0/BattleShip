@@ -458,3 +458,30 @@ td {
     filter: brightness(0.5);
     pointer-events: none;
 }
+
+#historyContent {
+    overflow-y: auto; 
+    max-height: 200px;
+    font-size: 0.75em;
+}
+
+#historyContent::-webkit-scrollbar {
+    width: 10px;
+}
+
+#history{
+    background: rgba(30, 30, 30, 0.5);
+    border-radius: 25px;
+    padding: 2%;
+}
+
+#historyContent::-webkit-scrollbar-thumb {
+    background-color: #3a3d3e;
+    border-radius: 10px;
+}
+
+#history h3 {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
