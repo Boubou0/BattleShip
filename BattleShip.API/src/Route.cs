@@ -23,7 +23,11 @@ namespace BattleShip.API
             .WithOpenApi();
             app.MapGet("/StartGame", (HttpContext httpContext) =>
             {
-                var name = httpContext.User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+                var name = httpContext.User.Claims.FirstOrDefault(c => c.Type == "https://dev-6bxro7e01zwus67q.eu.auth0.comname")?.Value;
+                if (name == null)
+                {
+                    return Results.NotFound("User not found");
+                }
                 var gameService = app.Services.GetRequiredService<GameService>();
                 var actionService = app.Services.GetRequiredService<ActionService>();
                 var currentPartie = gameService.InitGame(name);
@@ -35,7 +39,7 @@ namespace BattleShip.API
                 var positionsPlayer1 = BoardService.ListShipPositions(currentPartie.Player1Board);
                 actionService.moves = ActionService.GenerateAllMoves();
                 var boards = new CreateGameDTO(currentPartie.Id, positionsPlayer1);
-                return boards;
+                return Results.Ok(boards);
             }).WithName("StartGame")
               .RequireAuthorization()
               .WithDescription("Start a new game of battleship")
