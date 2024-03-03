@@ -34,7 +34,7 @@ builder.Services.AddAuthentication((options) => {
             ValidAudience = builder.Configuration["Auth0:Audience"],
             ValidIssuer = $"https://{builder.Configuration["Auth0:Domain"]}"
         };
-        c.TokenValidationParameters.NameClaimType = "https://dev-6bxro7e01zwus67q.eu.auth0.com";
+        c.TokenValidationParameters.NameClaimType = "https://dev-6bxro7e01zwus67q.eu.auth0.comname";
     });
 
 builder.Services.AddAuthorization(options =>{});

@@ -1,5 +1,9 @@
 ﻿@page "/"
 @attribute [Authorize]
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@using System.Text.Json;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
 <PageTitle>Home</PageTitle>
 
@@ -11,6 +15,20 @@
 
     <a class="button-21" role="button" href="/BattleIA">1 VS IA</a>
     <a class="button-21 disable" role="button">1 VS 1</a>
+    
+    <a class="button-21" style="margin: 10px;"  onclick="@(() => ShowLeaderBoard())" role="button">Leaderboard</a>
 </div>
 
 
+@code {
+    async Task ShowLeaderBoard() {
+        var response = await HttpClient.GetAsync("/Leaderboard");
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            await JSRuntime.InvokeVoidAsync("console.log", content);
+        } else {
+            // Gérer les erreurs de requête HTTP
+            await JSRuntime.InvokeVoidAsync("console.error", "Erreur lors de la récupération du tableau de classement.");
+        }
+    }
+}
