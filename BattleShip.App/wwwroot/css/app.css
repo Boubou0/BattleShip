@@ -75,3 +75,425 @@
 code {
     color: #c02d76;
 }
+
+
+body {
+    background: url(images/OCEAN-102622.jpg) no-repeat center;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    animation: moveBackground 300s linear infinite; /* Déplacement du fond d'écran en boucle sur 30 secondes */
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 50%; /* Position de départ */
+    }
+    50% {
+        background-position: 100% 50%; /* Position intermédiaire */
+    }
+    100% {
+        background-position: 0% 50%; /* Position finale, retour à la position de départ */
+    }
+}
+.blurCard {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Largeur de votre choix */
+    height: 300px; /* Hauteur de votre choix */
+    /* background-color: rgba(255, 255, 255, 0.2); Couleur de fond semi-transparente */
+    border-radius: 10px; /* Arrondi des coins pour créer une forme de carte */
+    padding: 20px; /* Marge interne pour l'espace du contenu */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    backdrop-filter: blur(25px); /* Flou du fond */
+    -webkit-backdrop-filter: blur(25px); /* Pour la compatibilité avec Safari */
+    text-align: center; /* Centrer les éléments horizontalement */
+}
+
+#icoChipi{
+    margin: 5%;
+    width: 30%;
+}
+
+/* CSS */
+.button-21 {
+    align-items: center;
+    appearance: none;
+    background-color: #3EB2FD;
+    background-image: linear-gradient(1deg, #4F58FD, #149BF3 99%);
+    background-size: calc(100% + 20px) calc(100% + 20px);
+    border-radius: 100px;
+    border-width: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: CircularStd,sans-serif;
+    font-size: 1rem;
+    height: auto;
+    justify-content: center;
+    line-height: 1.5;
+    padding: 6px 20px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color .2s,background-position .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  
+  .button-21:active,
+  .button-21:focus {
+    outline: none;
+  }
+  
+  .button-21:hover {
+    background-position: -20px -20px;
+  }
+  
+  .button-21:focus:not(:active) {
+    box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
+  }
+
+  .signout{
+    background-image: linear-gradient(1deg, #a51e1e, #dd2d2d 99%);
+    margin: 0 10px;
+  }
+
+
+
+  .loginSection {
+    display: flex;
+    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    position: absolute;
+    z-index: 1;
+    backdrop-filter: blur(25px);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+
+
+  #blurCard.back {
+    animation: expandCard 0.5s ease forwards;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-evenly;
+  }
+
+@keyframes expandCard {
+    0% {
+        width: 400px;
+        height: 300px;
+    }
+    100% {
+        width: 95%;
+        height: 90%;
+    }
+}
+
+#tableau1,
+#tableau2 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 2px; /* Espacement entre les cellules */
+}
+
+#tableau1 {
+    background-color: rgba(0, 0, 255, 0.3); /* Couleur de fond pour votre première grille */
+}
+
+#tableau2 {
+    background-color: rgba(255, 0, 0, 0.3); /* Couleur de fond pour votre deuxième grille */
+}
+
+.cellule {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* Couleur de fond des cellules */
+    border: 1px solid rgba(0, 0, 0, 0.5); /* Bordures des cellules */
+    box-sizing: border-box;
+}
+
+/* Style pour les bateaux */
+.cellule.bateau {
+    background-color: rgba(0, 0, 0, 0.8); /* Couleur de fond des cellules pour les bateaux */
+}
+
+
+.tdGame {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+}
+
+.tdGame:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.Miss {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+
+
+.Miss::after {
+    content: '';
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 10px; 
+    height: 10px; 
+    background-color: black;
+    border-radius: 50%; 
+}
+
+.Miss:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+}
+
+.Miss .plouf {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
+    width: 100%;
+    height: 100%;
+    animation: ploufAnimation 0.75s ease;
+    animation-fill-mode: forwards;
+
+}
+
+@keyframes ploufAnimation {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(0.1);
+    }
+    50% {
+        transform: scale(0.4);
+    }
+    100% {
+        transform: scale(0.1);
+    }
+}
+
+
+.tdPlayer{
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+#toolData {
+    width: 15%;
+    padding: 5%;
+    background: #303030ba;
+    border-radius: 25px;
+}
+
+.shipCell {
+    border-radius: 5px;
+}   
+
+td {
+    border-radius: 1px;
+}
+
+.Aship {
+    background-color: #cb997e
+}
+
+.Bship {
+    background-color: #ddbea9
+}
+
+.Cship {
+    background-color: #ffe8d6
+}
+
+.Dship {
+    background-color: #b7b7a4
+}
+
+.Eship {
+    background-color: #a5a58d
+}
+
+.Fship {
+    background-color: #6b705c
+}
+
+.hitCell {
+    background-color: #ff0000;
+    pointer-events: none;
+    background: url('images/fire-flame.gif') no-repeat center;
+    border-radius: 5px;
+}
+
+.Hit {
+    background-color: #ff0000;
+    pointer-events: none;
+    background: url('images/fire-flame.gif') no-repeat center;
+    border-radius: 5px;
+}
+
+
+.shipInfo {
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+#info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#dataInfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+}
+
+.attack {
+    animation: explosionAnimation 1s ease;
+}
+
+@keyframes explosionAnimation {
+    0% {
+        background: none;
+    }
+    50% {
+        background: #ff0000;
+    }
+    100% {
+        background: none;
+    }
+}
+
+.youEnd {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    align-items: center;
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(30,30,30,0.8);
+    backdrop-filter: blur(25px);
+}
+
+.youWin #youWin {
+    display: block !important;
+}
+
+.youLoose #youLoose {
+    display: block !important;
+}
+
+.imgOneShip { 
+    background: none; 
+    background: url('images/oneBoat3.png') no-repeat center; 
+    background-size: 100%; 
+} 
+ 
+.imgShipLeft { 
+    border-radius: 0px; 
+    background: none; 
+    background: url('images/leftBoat.png') no-repeat center; 
+    background-size: 100%; 
+} 
+ 
+.imgShipRight { 
+    border-radius: 0px; 
+    background: none; 
+    background: url('images/rightBoat.png') no-repeat center; 
+    background-size: 100%; 
+} 
+ 
+.imgShipMid { 
+    border-radius: 0px; 
+    background: none; 
+    background: url('images/midBoat.png') no-repeat center; 
+    background-size: 100%; 
+} 
+
+.revert {
+    transform: rotate(-90deg);
+}
+
+
+.disable {
+    background-image: linear-gradient(1deg, #2f2f36, #3a3d3e 99%);
+    color: whitesmoke;
+    cursor: not-allowed;
+}
+
+.boatCell {
+    cursor: not-allowed;
+    filter: brightness(0.5);
+    pointer-events: none;
+}
+
+#historyContent {
+    overflow-y: auto; 
+    max-height: 200px;
+    font-size: 0.75em;
+}
+
+#historyContent::-webkit-scrollbar {
+    width: 10px;
+}
+
+#history{
+    background: rgba(30, 30, 30, 0.5);
+    border-radius: 25px;
+    padding: 2%;
+}
+
+#historyContent::-webkit-scrollbar-thumb {
+    background-color: #3a3d3e;
+    border-radius: 10px;
+}
+
+#history h3 {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+#difficultySelection {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}

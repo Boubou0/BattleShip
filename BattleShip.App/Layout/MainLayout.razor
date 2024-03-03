@@ -1,3 +1,17 @@
-﻿@inherits LayoutComponentBase
+﻿@* Client/Shared/MainLayout.razor *@
 
-@Body
+@inherits LayoutComponentBase
+
+
+<div class="page">
+    <main>
+        <div class="top-row px-4 loginSection">
+            <AccessControl />  
+            <a class="button-21" role="button" href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            @* <img src="css/images/user.svg" alt="User" class="logo" /> *@
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

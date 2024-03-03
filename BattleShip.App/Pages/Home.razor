@@ -1,7 +1,57 @@
 ﻿@page "/"
+@attribute [Authorize]
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@using System.Text.Json;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Text;
+
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+
+<div class="blurCard">
+    <img id="icoChipi" src="/css/images/Chipiwars.png" alt="ChipiWars" />
+    <h1>Chipi Wars</h1>
+
+    <a class="button-21" role="button" href="/BattleIA">1 VS IA</a>
+    <a class="button-21 disable" role="button">1 VS 1</a>
+    
+    <a class="button-21" onclick="@(() => ShowLeaderBoard())" role="button">Leaderboard</a>
+</div>
+
+
+@code {
+    async Task ShowLeaderBoard() {
+        var response = await HttpClient.GetAsync("/Leaderboard");
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            var leaderboard = JsonSerializer.Deserialize<List<LeaderboardEntry>>(content);
+            
+            if (leaderboard != null && leaderboard.Any())
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < leaderboard.Count; i++)
+                {
+                    sb.AppendLine($"{i+1}. {leaderboard[i].playerName} - Score: {leaderboard[i].score}");
+                }
+                await JSRuntime.InvokeVoidAsync("alert", sb.ToString());
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Aucun résultat trouvé.");
+            }
+        } else {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erreur lors de la récupération du tableau de classement.");
+        }
+    }
+
+    public class LeaderboardEntry
+    {
+        public int id { get; set; }
+        public string playerName { get; set; }
+        public int score { get; set; }
+    }
+
+}

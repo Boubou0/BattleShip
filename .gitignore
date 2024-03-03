@@ -1,0 +1,14 @@
+
+BattleShip.App/bin/Debug/
+
+BattleShip.App/obj/Debug/net8.0/
+
+BattleShip.API/obj/Debug/net8.0/
+
+BattleShip.Models/obj/Debug/net8.0/
+
+BattleShip.API/obj/
+
+BattleShip.Models/obj/
+
+BattleShip.API/bin/Debug/net8.0/
