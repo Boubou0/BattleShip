@@ -36,6 +36,89 @@ public class ActionService
         Tuple<int, int> randomMove = GetRandomMoveAndRemove(moves);
         return Attack(player, board, randomMove.Item1, randomMove.Item2);
     }
+    public Tuple<int, int> GetNextPerimeterAttack(char[,] board, int x, int y)
+{
+    for (int i = x - 1; i <= x + 1; i++)
+    {
+        for (int j = y - 1; j <= y + 1; j++)
+        {
+            if (i >= 0 && i < board.GetLength(0) && j >= 0 && j < board.GetLength(1) &&
+                (i != x || j != y) && board[i, j] == '\0')
+            {
+                return new Tuple<int, int>(i, j);
+            }
+        }
+    }
+    return null;
+}
+
+public List<Tuple<int, int>> GetPerimeterPositions(int x, int y)
+{
+    List<Tuple<int, int>> perimeterPositions = new List<Tuple<int, int>>();
+
+    perimeterPositions.Add(new Tuple<int, int>(x - 1, y));
+    perimeterPositions.Add(new Tuple<int, int>(x + 1, y));
+    perimeterPositions.Add(new Tuple<int, int>(x, y - 1));
+    perimeterPositions.Add(new Tuple<int, int>(x, y + 1));
+
+    return perimeterPositions;
+}
+
+public AttackResult AiPerimeterAttack(string player, char[,] board)
+{
+    HashSet<Tuple<int, int>> attackedPositions = new HashSet<Tuple<int, int>>();
+
+    for (int i = 0; i < board.GetLength(0); i++)
+    {
+        for (int j = 0; j < board.GetLength(1); j++)
+        {
+            if (board[i, j] == 'X')
+            {
+                List<Tuple<int, int>> perimeterPositions = GetPerimeterPositions(i, j);
+                foreach (var position in perimeterPositions)
+                {
+                    if (position.Item1 >= 0 && position.Item1 < board.GetLength(0) &&
+                        position.Item2 >= 0 && position.Item2 < board.GetLength(1) &&
+                        board[position.Item1, position.Item2] == '\0' &&
+                        !attackedPositions.Contains(position))
+                    {
+                        attackedPositions.Add(position);
+                        return Attack(player, board, position.Item2, position.Item1);
+                    }
+                }
+            }
+        }
+    }
+    Tuple<int, int> randomMove = GetRandomMoveAndRemove(moves);
+    while (attackedPositions.Contains(randomMove))
+    {
+        randomMove = GetRandomMoveAndRemove(moves);
+    }
+    attackedPositions.Add(randomMove);
+    return Attack(player, board, randomMove.Item2, randomMove.Item1);
+}
+
+
+
+    public AttackResult AiImpossibleAttack(string player, char [,] board)
+    {
+        int attackX = 0;
+        int attackY = 0;
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            for (int j = 0; j < board.GetLength(1); j++)
+            {
+                if (board[i, j] != '\0' && board[i, j] != 'X' && board[i, j] != 'O')
+                {
+                    attackX = j;
+                    attackY = i;
+                    return Attack(player, board, attackX, attackY);
+                }
+            }
+        }
+        Tuple<int, int> randomMove = GetRandomMoveAndRemove(moves);
+        return Attack(player, board, randomMove.Item1, randomMove.Item2);
+    }
      public static List<Tuple<int, int>> GenerateAllMoves()
     {
         List<Tuple<int, int>> listMoves = new List<Tuple<int, int>>();

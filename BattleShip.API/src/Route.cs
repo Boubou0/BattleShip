@@ -21,7 +21,7 @@ namespace BattleShip.API
             .RequireAuthorization()
             .WithDescription("Get the current game of battleship")
             .WithOpenApi();
-            app.MapGet("/StartGame", (HttpContext httpContext) =>
+            app.MapGet("/StartGame/{difficulte}", (HttpContext httpContext, int difficulte) =>
             {
                 var name = httpContext.User.Claims.FirstOrDefault(c => c.Type == "https://dev-6bxro7e01zwus67q.eu.auth0.comname")?.Value;
                 if (name == null)
@@ -30,7 +30,7 @@ namespace BattleShip.API
                 }
                 var gameService = app.Services.GetRequiredService<GameService>();
                 var actionService = app.Services.GetRequiredService<ActionService>();
-                var currentPartie = gameService.InitGame(name);
+                var currentPartie = gameService.InitGame(name, difficulte);
                 gameService.parties.Add(currentPartie);
                 BoardService.PlaceShips(currentPartie.Player1Board, BoardService.GetAllShips());
                 BoardService.PlaceShips(currentPartie.Player2Board, BoardService.GetAllShips());
@@ -38,7 +38,7 @@ namespace BattleShip.API
                 currentPartie.Player2StartingBoard = (char[,])currentPartie.Player2Board.Clone();
                 var positionsPlayer1 = BoardService.ListShipPositions(currentPartie.Player1Board);
                 actionService.moves = ActionService.GenerateAllMoves();
-                var boards = new CreateGameDTO(currentPartie.Id, positionsPlayer1);
+                var boards = new CreateGameDTO(currentPartie.Id, positionsPlayer1, currentPartie.difficulte);
                 return Results.Ok(boards);
             }).WithName("StartGame")
               .RequireAuthorization()
@@ -118,19 +118,41 @@ namespace BattleShip.API
 
                     if (attack.AttackState != "Hit")
                     {
-                        var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
-                        listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
-                        while (aiAttack.AttackState == "Hit")
-                        {
-                            if (aiAttack.GameStatus != "")
+                        if (game.difficulte == 0) {
+                            var aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
+                            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+                            while (aiAttack.AttackState == "Hit")
                             {
-                                game.Winner = game.Player2;
-                                gameService.endGame(gameId);
-                                break;
+                                if (aiAttack.GameStatus != "")
+                                {
+                                    game.Winner = game.Player2;
+                                    gameService.endGame(gameId);
+                                    break;
+                                }
+                                aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
+                                listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
                             }
-                            aiAttack = actionService.AiAttack(game.Player2, game.Player1Board);
+                        }
+                        if (game.difficulte == 1){
+                            var aiAttack = actionService.AiPerimeterAttack(game.Player2, game.Player1Board);
                             listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
                         }
+                        if (game.difficulte == 2){
+                            var aiAttack = actionService.AiImpossibleAttack(game.Player2, game.Player1Board);
+                            listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+                            while (aiAttack.AttackState == "Hit")
+                            {
+                                if (aiAttack.GameStatus != "")
+                                {
+                                    game.Winner = game.Player2;
+                                    gameService.endGame(gameId);
+                                    break;
+                                }
+                                aiAttack = actionService.AiImpossibleAttack(game.Player2, game.Player1Board);
+                                listAiAttack.Add(new AttackDTO(aiAttack.GameStatus, aiAttack.AttackState, aiAttack.MoveLabel, aiAttack.sunkunBoat));
+                            }
+                        }
+                        
                     }
                     if (attack.GameStatus == "Win")
                     {
