@@ -213,14 +213,10 @@ async Task StartGameWithDifficulty(int difficulty){
 
             foreach (var ship in content.Player1Position)
             {
-                @* await JSRuntime.InvokeVoidAsync("console.log", $"Ship is {ship.Key} {partieId}"); *@
                 foreach (var positionShip in ship.Value)
                 {
                     var x = LetterToNumber(positionShip.Substring(0, 1));
                     var y = int.Parse(positionShip.Substring(1, 1));
-
-                    @* await JSRuntime.InvokeVoidAsync("console.log", $"X is {x} and Y is {y}");
-                    await JSRuntime.InvokeVoidAsync("console.log", $"player_{y}_{x}"); *@
 
                     var positionKey = $"player_{y}_{x}";
                     if (playerPositions.ContainsKey(positionKey) && playerPositions[positionKey].Contains("Hit"))
@@ -256,9 +252,7 @@ async Task StartGameWithDifficulty(int difficulty){
 
     async void HandleCellClick(int x, int y)
     {
-        classPlayer2Attack = "";
-        await JSRuntime.InvokeVoidAsync("console.log", $"Clicked on cell ({x}, {y}) and partieId is {partieId}");
-        
+        classPlayer2Attack = "";        
         var response = await HttpClient.GetAsync($"/Attack/{partieId}/{x}/{y}");
 
         if (response.IsSuccessStatusCode)
@@ -294,15 +288,14 @@ async Task StartGameWithDifficulty(int difficulty){
                 // Résulat de l'attaque
                 if (playerMove.AttackState == "Hit")
                 {
-                    await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez touché un bateau");
                     await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3"); 
                     listeAction.Add($"Vous avez touché un bateau en ({x}, {y})");
                     
                     gridPosition[positionAttack] = playerMove.AttackState;
                     classAttack = "attack";
                     StateHasChanged(); 
-                    await Task.Delay(1500); 
                     classAttack = "";
+                    
                     if(playerMove.sunkunBoat != ""){
                         string[] parties = playerMove.sunkunBoat.Split(':');
                         string ship = parties[0]; 
@@ -361,8 +354,6 @@ async Task StartGameWithDifficulty(int difficulty){
                 {
                     gridPosition[positionAttack] = playerMove.AttackState;
                     classAttack = "";
-
-                    await JSRuntime.InvokeVoidAsync("console.log", $"Vous avez raté votre attaque");
                     await JSRuntime.InvokeVoidAsync("playSound", "/css/images/plouf.m4a");
                     listeAction.Add($"Vous avez raté votre attaque en ({x}, {y})");        
                      // Réponse de l'attaque
@@ -390,7 +381,7 @@ async Task StartGameWithDifficulty(int difficulty){
                     classPlayer2Attack = hasAttack ? "attack" : "";
 
 
-                    await FetchGameData(); // Rechargez les données du jeu après l'attaque
+                    await FetchGameData(); 
                     StateHasChanged(); 
                 }
             }
