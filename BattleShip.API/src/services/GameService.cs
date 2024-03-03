@@ -6,6 +6,7 @@ public class GameService
     {
         public bool isFinished { get; set; }
         public Guid Id { get; set; }
+        public int difficulte { get; set; }
         public string Player1 { get; set; }
         public string Player2 { get; set; }
         public char[,] Player1Board { get; set; }
@@ -26,12 +27,13 @@ public class GameService
         var currentGame = parties.FirstOrDefault(p => p.Id == gameId);
         currentGame.isFinished = true;
     }
-    public Partie InitGame(string username){
+    public Partie InitGame(string username, int difficulte){
         var partie = new Partie
         {
             Id = Guid.NewGuid(),
             Player1 = username,
             Player2 = "Joueur 2",
+            difficulte = difficulte,
             Player1Board = BoardService.CreateBoard(10),
             Player2Board = BoardService.CreateBoard(10),
             Winner = ""

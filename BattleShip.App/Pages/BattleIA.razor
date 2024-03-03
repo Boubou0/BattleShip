@@ -11,6 +11,15 @@
 
 <PageTitle>1 VS IA</PageTitle>
 
+@if (showDifficultySelection)
+{
+    <div id="difficultySelection">
+        <h3>Choisissez le niveau de difficulté :</h3>
+        <a class="button-21" onclick="@(() => StartGameWithDifficulty(0))" role="button">Facile</a>
+        <a class="button-21 signout" onclick="@(() => StartGameWithDifficulty(2))" role="button">Impossible</a>
+    </div>
+}
+
 <div id="winYoupi" class="@win" style="display: none;">
     <img src="css/images/youpi.gif" alt="Youpi" />
     <h2 id="youWin" style="display: none;"> Vous avez gagné(e) ! </h2>
@@ -18,108 +27,110 @@
     <a class="button-21" style="margin: 10px;"  onclick="@(() => RestartGame())" role="button">Recommencer</a>
     <a class="button-21" role="button" href="/">Menu principal</a>
 </div>
+@if (!showDifficultySelection)
+{
+    <div id="blurCard" class="blurCard back">
+        <div id="backBoard" class="@classAttack">
+            <table id="mainBoard">
+                @for (int i = 0; i < 10; i++)
+                {
+                    <tr>
+                        @for (int j = 0; j < 10; j++)
+                        {
+                            var localX = j;
+                            var localY = i;
+                            var cellId = $"cell_{i}_{j}";
 
-<div id="blurCard" class="back blurCard">
-    <div id="backBoard" class="@classAttack">
-        <table id="mainBoard">
-            @for (int i = 0; i < 10; i++)
-            {
-                <tr>
-                    @for (int j = 0; j < 10; j++)
-                    {
-                        var localX = j;
-                        var localY = i;
-                        var cellId = $"cell_{i}_{j}";
+                            string cellClass = gridPosition.ContainsKey(cellId) ? gridPosition[cellId] : "";
+                            <td class="tdGame @cellClass" id="@cellId" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"><div class="plouf"></div></td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
 
-                        string cellClass = gridPosition.ContainsKey(cellId) ? gridPosition[cellId] : "";
-                        <td class="tdGame @cellClass" id="@cellId" data-X="@($"{j}")" data-Y="@($"{i}")" onclick="@(() => HandleCellClick(@localX, @localY))"><div class="plouf"></div></td>
-                    }
-                </tr>
-            }
-        </table>
-    </div>
+        <div id="toolData">
+                    <table id="boardPlayer" class="@classPlayer2Attack">
+                        @for (int i = 0; i < 10; i++)
+                        {
+                            <tr>
+                                @for (int j = 0; j < 10; j++)
+                                {
+                                    var cellId = $"player_{i}_{j}";
+                                    string cellClass = playerPositions.ContainsKey(cellId) ? playerPositions[cellId] : "";
+                                    <td class="tdPlayer @cellClass" id="@cellId" data-X="@j" data-Y="@i"></td>
+                                }
+                            </tr>
+                        }
+                    </table>
 
-    <div id="toolData">
-                <table id="boardPlayer" class="@classPlayer2Attack">
-                    @for (int i = 0; i < 10; i++)
-                    {
-                        <tr>
-                            @for (int j = 0; j < 10; j++)
-                            {
-                                var cellId = $"player_{i}_{j}";
-                                string cellClass = playerPositions.ContainsKey(cellId) ? playerPositions[cellId] : "";
-                                <td class="tdPlayer @cellClass" id="@cellId" data-X="@j" data-Y="@i"></td>
-                            }
-                        </tr>
-                    }
-                </table>
+                <div id="dataInfo">
 
-            <div id="dataInfo">
+                    <div id="history">
+                        <h3>Historique</h3>
+                        <div id="historyContent">
+                             <ul>
+                                @for (int i = listeAction.Count - 1; i >= 0; i--)
+                                {
+                                    <li>@listeAction[i]</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
 
-                <div id="history">
-                    <h3>Historique</h3>
-                    <div id="historyContent">
-                        <ul>
-                            @for (int i = listeAction.Count - 1; i >= 0; i--)
-                            {
-                                <li>@listeAction[i]</li>
-                            }
-                        </ul>
+                    <div id="info">
+                        <table>
+                            <tr>
+                                <td class="shipInfo Aship imgShipLeft"></td>
+                                <td class="shipInfo Aship imgShipMid"></td>
+                                <td class="shipInfo Aship imgShipMid"></td>
+                                <td class="shipInfo Aship imgShipRight"></td>
+                            </tr
+                        </table>
+
+                        <table>
+                            <tr>
+                                <td class="shipInfo Bship imgShipLeft"></td>
+                                <td class="shipInfo Bship imgShipMid"></td>
+                                <td class="shipInfo Bship imgShipRight"></td>
+                            </tr
+                        </table>
+
+                        <table>
+                            <tr>
+                                <td class="shipInfo Cship imgShipLeft"></td>
+                                <td class="shipInfo Cship imgShipMid"></td>
+                                <td class="shipInfo Cship imgShipRight"></td>
+                            </tr
+                        </table>
+
+                        <table>
+                            <tr>
+                                <td class="shipInfo Dship imgShipLeft"></td>
+                                <td class="shipInfo Dship imgShipRight"></td>
+                            </tr
+                        </table>
+
+                        <table>
+                            <tr>
+                                <td class="shipInfo Eship imgShipLeft"></td>
+                                <td class="shipInfo Eship imgShipRight"></td>
+                            </tr
+                        </table>
+
+                        <table>
+                            <tr>
+                                <td class="shipInfo Fship imgOneShip"></td>
+                            </tr
+                        </table>
+
                     </div>
                 </div>
-
-                <div id="info">
-                    <table>
-                        <tr>
-                            <td class="shipInfo Aship imgShipLeft"></td>
-                            <td class="shipInfo Aship imgShipMid"></td>
-                            <td class="shipInfo Aship imgShipMid"></td>
-                            <td class="shipInfo Aship imgShipRight"></td>
-                        </tr
-                    </table>
-
-                    <table>
-                        <tr>
-                            <td class="shipInfo Bship imgShipLeft"></td>
-                            <td class="shipInfo Bship imgShipMid"></td>
-                            <td class="shipInfo Bship imgShipRight"></td>
-                        </tr
-                    </table>
-
-                    <table>
-                        <tr>
-                            <td class="shipInfo Cship imgShipLeft"></td>
-                            <td class="shipInfo Cship imgShipMid"></td>
-                            <td class="shipInfo Cship imgShipRight"></td>
-                        </tr
-                    </table>
-
-                    <table>
-                        <tr>
-                            <td class="shipInfo Dship imgShipLeft"></td>
-                            <td class="shipInfo Dship imgShipRight"></td>
-                        </tr
-                    </table>
-
-                    <table>
-                        <tr>
-                            <td class="shipInfo Eship imgShipLeft"></td>
-                            <td class="shipInfo Eship imgShipRight"></td>
-                        </tr
-                    </table>
-
-                    <table>
-                        <tr>
-                            <td class="shipInfo Fship imgOneShip"></td>
-                        </tr
-                    </table>
-
-                </div>
+                
             </div>
             
         </div>
-        
-    </div>
+    }
 
     <script>
         window.playSound = function(soundFileName) {
@@ -137,6 +148,7 @@
 
 
 @code {
+    bool showDifficultySelection = true;
     string? partieId;
 
     string win = "";
@@ -149,24 +161,27 @@
     Dictionary<string, string> gridPosition = new Dictionary<string, string>();
 
     CreateGameDTO content;
-
     List<string> listeAction = new List<string>();
-            
+        
+async Task StartGameWithDifficulty(int difficulty){
+        showDifficultySelection = false;
+        List<string> listeAction = new List<string>();
+        var response = await HttpClient.GetAsync($"/StartGame/{difficulty}");
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        { 
-            await StartGame();
-        }
-        catch (AccessTokenNotAvailableException exception)
+        if (response.IsSuccessStatusCode)
         {
-            exception.Redirect();
+            content = await response.Content.ReadFromJsonAsync<CreateGameDTO>();
+            await FetchGameData();
+
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", "Erreur :(");
         }
     }
 
     async Task StartGame(){
-         var response = await HttpClient.GetAsync("/StartGame");
+        var response = await HttpClient.GetAsync($"/StartGame/{1}");
 
         if (response.IsSuccessStatusCode)
         {
@@ -187,8 +202,8 @@
         await JSRuntime.InvokeVoidAsync("stopSound");
         playerPositions = new Dictionary<string, string>();
         gridPosition = new Dictionary<string, string>();
-        List<string> listeAction = new List<string>();
-        await StartGame();
+        showDifficultySelection = true;
+        listeAction = new List<string>();
         StateHasChanged();
     }
 
@@ -237,16 +252,17 @@
 
     async void HandleCellClick(int x, int y)
     {
-        classPlayer2Attack = "";
-        
+        classPlayer2Attack = "";        
         var response = await HttpClient.GetAsync($"/Attack/{partieId}/{x}/{y}");
 
         if (response.IsSuccessStatusCode)
         {
+            @* var jsonResponse = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonSerializer.Deserialize<listAttackDTO>(jsonResponse); *@
             listAttackDTO responseObject = await response.Content.ReadFromJsonAsync<listAttackDTO>();
 
 
-            string winner = responseObject?.winner ?? "";
+            string winner = responseObject.winner;
             AttackDTO playerMove = responseObject.playerMove;
             
 
@@ -273,14 +289,13 @@
                 if (playerMove.AttackState == "Hit")
                 {
                     await JSRuntime.InvokeVoidAsync("playSound", "/css/images/explosion.mp3"); 
-
                     listeAction.Add($"Vous avez touché un bateau en ({x}, {y})");
                     
                     gridPosition[positionAttack] = playerMove.AttackState;
                     classAttack = "attack";
                     StateHasChanged(); 
                     classAttack = "";
-
+                    
                     if(playerMove.sunkunBoat != ""){
                         string[] parties = playerMove.sunkunBoat.Split(':');
                         string ship = parties[0]; 
@@ -339,12 +354,10 @@
                 {
                     gridPosition[positionAttack] = playerMove.AttackState;
                     classAttack = "";
-
                     await JSRuntime.InvokeVoidAsync("playSound", "/css/images/plouf.m4a");
-
                     listeAction.Add($"Vous avez raté votre attaque en ({x}, {y})");        
-
                      // Réponse de l'attaque
+
                     bool hasAttack = false;
                     foreach(AttackDTO attack in responseObject.listAiAttack){
                         var moveLabel = attack.MoveLabel;
@@ -354,7 +367,6 @@
                             hasAttack = true;
                             await JSRuntime.InvokeVoidAsync("playSound", "/css/images/boomAd.mp3");
                             listeAction.Add($"L'IA a touché un bateau en {moveLabel}");
-
                         } else {
                             listeAction.Add($"L'IA a raté son attaque en {moveLabel}");
                         }
@@ -377,9 +389,7 @@
             
         }
     }
-
-
-    bool IsVerticalBoat(string[] positionsValeurs)
+     bool IsVerticalBoat(string[] positionsValeurs)
     {
         if (positionsValeurs.Length == 0)
         {
@@ -398,5 +408,3 @@
         return true;
     }
 }
-
-
