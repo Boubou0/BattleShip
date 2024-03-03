@@ -23,7 +23,7 @@ namespace BattleShip.API
             .WithOpenApi();
             app.MapGet("/StartGame", (HttpContext httpContext) =>
             {
-                var name = httpContext.User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+                var name = httpContext.User.Claims.FirstOrDefault(c => c.Type == "https://dev-6bxro7e01zwus67q.eu.auth0.com")?.Value;
                 var gameService = app.Services.GetRequiredService<GameService>();
                 var actionService = app.Services.GetRequiredService<ActionService>();
                 var currentPartie = gameService.InitGame(name);
