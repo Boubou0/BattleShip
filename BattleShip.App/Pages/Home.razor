@@ -4,6 +4,8 @@
 @inject IJSRuntime JSRuntime
 @using System.Text.Json;
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Text;
+
 
 <PageTitle>Home</PageTitle>
 
@@ -16,7 +18,7 @@
     <a class="button-21" role="button" href="/BattleIA">1 VS IA</a>
     <a class="button-21 disable" role="button">1 VS 1</a>
     
-    <a class="button-21" style="margin: 10px;"  onclick="@(() => ShowLeaderBoard())" role="button">Leaderboard</a>
+    <a class="button-21" onclick="@(() => ShowLeaderBoard())" role="button">Leaderboard</a>
 </div>
 
 
@@ -25,10 +27,31 @@
         var response = await HttpClient.GetAsync("/Leaderboard");
         if (response.IsSuccessStatusCode) {
             var content = await response.Content.ReadAsStringAsync();
-            await JSRuntime.InvokeVoidAsync("console.log", content);
+            var leaderboard = JsonSerializer.Deserialize<List<LeaderboardEntry>>(content);
+            
+            if (leaderboard != null && leaderboard.Any())
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < leaderboard.Count; i++)
+                {
+                    sb.AppendLine($"{i+1}. {leaderboard[i].playerName} - Score: {leaderboard[i].score}");
+                }
+                await JSRuntime.InvokeVoidAsync("alert", sb.ToString());
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Aucun résultat trouvé.");
+            }
         } else {
-            // Gérer les erreurs de requête HTTP
             await JSRuntime.InvokeVoidAsync("console.error", "Erreur lors de la récupération du tableau de classement.");
         }
     }
+
+    public class LeaderboardEntry
+    {
+        public int id { get; set; }
+        public string playerName { get; set; }
+        public int score { get; set; }
+    }
+
 }
