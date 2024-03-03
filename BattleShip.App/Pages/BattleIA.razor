@@ -166,7 +166,7 @@
     }
 
     async Task StartGame(){
-         var response = await HttpClient.GetAsync("/StartGame");
+        var response = await HttpClient.GetAsync($"/StartGame/{0}");
 
         if (response.IsSuccessStatusCode)
         {
